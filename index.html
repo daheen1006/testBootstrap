@@ -50,11 +50,6 @@
       text-align: left;
     }
 
-    .routine h3 {
-      font-size: 1.2rem;
-      margin: 15px 0 5px;
-    }
-
     ul {
       list-style: none;
       padding: 0;
@@ -83,13 +78,13 @@
   </div>
 
   <script>
-    const apiKey = "ae2dd5af466f227db77a00f5aac8972d"; 
+    const apiKey = "ae2dd5af466f227db77a00f5aac8972d";
 
     const weatherEmojis = {
       clear: "☀",
       rain: "🌧",
       snow: "❄",
-      cloud: "☁",
+      clouds: "☁",
       mist: "🌫",
       default: "🌈"
     };
@@ -100,7 +95,7 @@
         "오늘은 하늘처럼 기분도 맑게 ☀",
         "가볍고 상쾌한 하루 되세요!"
       ],
-      cloud: [
+      clouds: [
         "구름처럼 잔잔한 하루가 될 거예요 ☁",
         "느긋한 마음으로 여유를 가져봐요",
         "오늘은 부드러운 흐름을 따라가요 🌫"
@@ -128,35 +123,58 @@
     };
 
     const routinesByWeather = {
-      clear: ["러닝 20분 + 스트레칭", "공원 산책", "요가 루틴: 태양경배 자세 중심", "자전거 타기", "댄스 다이어트 영상 따라하기"],
-      rain: ["실내 요가 + 명상", "전신 스트레칭", "홈트 10분 루틴 (전신)", "계단 오르기", "고요한 무드의 필라테스"],
-      snow: ["스노우 감성 요가", "자세 교정 스트레칭", "겨울 테마 홈트", "실내 스텝 + 상체 근력운동", "균형 잡기 루틴"],
-      cloud: ["실내 스텝 워킹", "댄스 커버 따라하기", "스트레칭 + 복부 집중 루틴", "플랭크 & 스쿼트 루틴", "고요한 산책"],
-      mist: ["목, 어깨 스트레칭 루틴", "요가 + 호흡 명상", "느리게 하는 요가", "체형 교정 운동", "조용한 실내 워킹"],
-      default: ["감정일기 쓰기", "좋아하는 음악 듣기", "명상 5분", "따뜻한 차 한잔", "좋아하는 노래 흥얼거리기"]
+      clear: {
+        운동: ["러닝 20분 + 스트레칭", "공원 산책", "요가 루틴: 태양경배 자세 중심"],
+        음악: ["빌리 아일리시 – “My Future”", "선우정아 – “도망가자”"],
+        음식: ["시리얼 + 과일 + 요거트", "샐러드 + 닭가슴살"],
+        색: ["노란색", "라벤더", "하늘색"],
+        운세: ["오늘은 당신이 빛나는 날이에요.", "기분 좋은 일이 생길 운세!"]
+      },
+      rain: {
+        운동: ["실내 요가 + 명상", "계단 오르기"],
+        음악: ["아이유 – “Rain Drop”", "백예린 – “Bye bye my blue”"],
+        음식: ["감자전 + 막걸리", "우동"],
+        색: ["청록", "흰색"],
+        운세: ["감정을 그대로 느껴도 괜찮아요.", "오늘은 무리하지 말아요."]
+      },
+      default: {
+        운동: ["스트레칭", "명상 5분"],
+        음악: ["좋아하는 노래 듣기"],
+        음식: ["따뜻한 차 한잔"],
+        색: ["민트"],
+        운세: ["당신은 지금도 충분히 괜찮아요."]
+      }
     };
 
-    function pickRandom(arr, n = 3) {
-      return arr.sort(() => 0.5 - Math.random()).slice(0, n);
+    function pickRandom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function pickRandomKeys(obj, count = 3) {
+      return Object.keys(obj).sort(() => 0.5 - Math.random()).slice(0, count);
     }
 
     function getMoodLine(type) {
       const list = moodLines[type] || moodLines["default"];
-      return list[Math.floor(Math.random() * list.length)];
+      return pickRandom(list);
     }
 
-    function renderRoutineList(routines, weatherCode) {
+    function renderRoutineListByCategory(categoryData, weatherCode) {
       const container = document.getElementById('routine');
       container.innerHTML = "<h3>📝 오늘의 추천 루틴</h3><ul>";
 
-      routines.forEach((routine, i) => {
-        const id = `${weatherCode}-${i}`;
+      const selectedCategories = pickRandomKeys(categoryData, 3);
+      selectedCategories.forEach((category, i) => {
+        const options = categoryData[category];
+        const randomItem = pickRandom(options);
+        const id = `${weatherCode}-${category}-${i}`;
         const checked = localStorage.getItem(id) === 'true';
+
         container.innerHTML += `
           <li>
             <label>
               <input type="checkbox" id="${id}" ${checked ? "checked" : ""}/>
-              <span class="${checked ? "completed" : ""}">${routine}</span>
+              <span class="${checked ? "completed" : ""}">[${category}] ${randomItem}</span>
             </label>
           </li>`;
       });
@@ -193,8 +211,8 @@
            🌡 현재 온도: ${tempC}°C<br/>
            💬 ${moodLine}`;
 
-        const routines = pickRandom(routinesByWeather[weatherCode] || routinesByWeather["default"], 3);
-        renderRoutineList(routines, weatherCode);
+        const routineSet = routinesByWeather[weatherCode] || routinesByWeather["default"];
+        renderRoutineListByCategory(routineSet, weatherCode);
       } catch (e) {
         document.getElementById("weather").innerText = "날씨 정보를 불러오지 못했어요 😢";
       }
