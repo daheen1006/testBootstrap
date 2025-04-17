@@ -3,84 +3,128 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>“내 마음의 NFC를 켜는 순간”</title>
+  <title>"내 마음의 NFCf를 켜는 순간"</title>
   <style>
     body {
-  font-family: 'Noto Sans KR', sans-serif;
-  background: linear-gradient(to bottom, #fefcea, #f1f9f6);
-  color: #444;
-  text-align: center;
-  padding: 50px;
-}
-    ..box {
-  background: #ffffffcc;
-  padding: 30px;
-  border-radius: 20px;
-  max-width: 420px;
-  margin: auto;
-  box-shadow: 0 8px 24px rgba(173, 216, 230, 0.3);
-  border: 2px solid #e0f7fa;
-}
+      font-family: 'Noto Sans KR', sans-serif;
+      background-image: url('https://i.ibb.co/DLDjY64/sakura.gif');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: #333;
+      text-align: center;
+      padding: 50px;
+    }
+    .box {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
     .weather {
-      font-size: 1.2rem;
-      margin: 20px 0;
+      font-size: 1.1rem;
+      margin: 15px 0;
     }
     .routine {
-      font-weight: bold;
-      margin: 30px 0 10px;
+      font-size: 1rem;
+      font-weight: 500;
+      margin: 20px 0 30px;
+      text-align: left;
     }
-    body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('https://media.giphy.com/media/3ohc0WmYzCkbiIijDi/giphy.gif');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    opacity: 0.07;
-    z-index: -1;
-  }
-</style>
+    .routine h3 {
+      font-size: 1.2rem;
+      margin: 15px 0 5px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      text-align: left;
+      margin: 6px 0;
+    }
+    input[type="checkbox"] {
+      margin-right: 8px;
+    }
+    .completed {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+  </style>
 </head>
 <body>
   <div class="box">
     <h1>🌸 오늘의 감정, 나를 위한 루틴 🌼</h1>
     <div id="weather" class="weather">당신의 오늘을 살펴보고 있어요...</div>
     <div id="routine" class="routine"></div>
-    <button onclick="alert('🌸 루틴을 다시 추천해드릴게요! 🌸'); location.reload()" onclick="location.reload()" style="background-color:#e0f7fa;border:none;padding:10px 20px;border-radius:10px;cursor:pointer;font-weight:bold;color:#00695c;box-shadow:0 4px 10px rgba(0,0,0,0.1);">🌱 루틴 다시 추천받기</button>
   </div>
 
   <script>
+    const apiKey = "ae2dd5af466f227db77a00f5aac8972d";
+
+    const routinesByWeather = {
+      clear: ["러닝 20분 + 스트레칭", "공원 산책", "요가 루틴", "자전거 타기", "댄스 다이어트 영상 따라하기"],
+      rain: ["실내 요가 + 명상", "전신 스트레칭", "필라테스", "홈트 10분 루틴", "계단 오르기"],
+      snow: ["실내 스텝 운동", "스노우 감성 요가", "자세 교정 스트레칭"],
+      cloud: ["실내 스텝 워킹", "댄스 커버 따라하기", "플랭크 & 스쿼트", "스트레칭 + 복부 루틴"],
+      mist: ["느리게 하는 요가", "목, 어깨 스트레칭", "조용한 실내 워킹", "호흡 명상"],
+      default: ["조용한 음악 듣기", "감정일기 쓰기", "명상 5분"]
+    };
+
+    function renderRoutineList(routines, weatherCode) {
+      const container = document.getElementById('routine');
+      container.innerHTML = "<h3>📝 오늘의 추천 루틴</h3><ul>";
+
+      routines.forEach((routine, i) => {
+        const id = `${weatherCode}-${i}`;
+        const checked = localStorage.getItem(id) === 'true';
+        container.innerHTML += `
+          <li>
+            <label>
+              <input type="checkbox" id="${id}" ${checked ? "checked" : ""}/>
+              <span class="${checked ? "completed" : ""}">${routine}</span>
+            </label>
+          </li>`;
+      });
+
+      container.innerHTML += "</ul>";
+
+      document.querySelectorAll("input[type='checkbox']").forEach(input => {
+        input.addEventListener("change", () => {
+          localStorage.setItem(input.id, input.checked);
+          const span = input.nextElementSibling;
+          span.classList.toggle("completed", input.checked);
+        });
+      });
+    }
+
     async function getWeather(lat, lon) {
-      const apiKey = 'ae2dd5af466f227db77a00f5aac8972d';
-      const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&lang=kr&units=metric`);
-      const data = await response.json();
+      const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&lang=kr`);
+      const data = await res.json();
       return data;
     }
 
-    function getRoutineByWeather(weather) {
-  if (weather.includes('thunderstorm')) return '천둥 번개엔 실내에서 조용히 나를 돌아보는 루틴이 좋아요.';
-  if (weather.includes('snow')) return '따뜻한 차 한잔과 독서, 혹은 실내 스트레칭으로 몸과 마음을 녹여보세요.';
-  if (weather.includes('rain')) return '실내 스트레칭과 따뜻한 차 한잔 추천드려요.';
-  if (weather.includes('drizzle')) return '잔잔한 비에는 잔잔한 음악과 명상 루틴이 잘 어울려요.';
-  if (weather.includes('cloud')) return '감정일기와 명상 루틴으로 마음을 정리해보세요.';
-  if (weather.includes('clear')) return '햇빛 아래 산책과 에너지 루틴을 추천드려요!';
-  if (weather.includes('mist') || weather.includes('fog') || weather.includes('haze')) return '희미한 공기 속에서 따뜻한 차 한 잔과 감정 기록으로 하루를 시작해보세요.';
-  return '조용한 음악과 짧은 휴식 루틴으로 하루를 시작해보세요.';
-}
-
     navigator.geolocation.getCurrentPosition(async (pos) => {
       const { latitude, longitude } = pos.coords;
-      const weatherData = await getWeather(latitude, longitude);
-      const mainWeather = weatherData.weather[0].main.toLowerCase();
+      try {
+        const weatherData = await getWeather(latitude, longitude);
+        const weatherCode = weatherData.weather[0].main.toLowerCase();
+        document.getElementById("weather").innerText =
+          `현재 날씨: ${weatherData.weather[0].description} (${weatherData.main.temp}°C)`;
 
-      document.getElementById('weather').innerText = `현재 날씨: ${weatherData.weather[0].description} (${weatherData.main.temp}°C)`;
-      document.getElementById('routine').innerHTML = `🌿 ${getRoutineByWeather(mainWeather)} 🌼 <br><img src='https://cdn-icons-png.flaticon.com/512/3448/3448332.png' width='50' style='margin-top:10px;'>`;
-    }, (err) => {
-      document.getElementById('weather').innerText = '위치 정보를 불러올 수 없습니다.';
+        const routines = routinesByWeather[weatherCode] || routinesByWeather["default"];
+        renderRoutineList(routines, weatherCode);
+      } catch (e) {
+        document.getElementById("weather").innerText = "날씨 정보를 불러오지 못했어요 😢";
+      }
+    }, () => {
+      document.getElementById("weather").innerText = "위치 정보 사용이 차단되어 있어요.";
     });
   </script>
 </body>
