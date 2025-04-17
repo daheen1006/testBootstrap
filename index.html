@@ -127,6 +127,14 @@
       return pickRandom(list);
     }
 
+    function checkAllComplete() {
+      const all = document.querySelectorAll("input[type='checkbox']");
+      const completed = Array.from(all).filter(input => input.checked);
+      if (all.length > 0 && completed.length === all.length) {
+        alert("🎉 오늘의 루틴을 모두 완료했어요! 스스로를 칭찬해 주세요 💐");
+      }
+    }
+
     function renderRoutineListByCategory(categoryData, weatherCode) {
       const container = document.getElementById('routine');
       container.innerHTML = "<h3>📝 오늘의 추천 루틴</h3><ul>";
@@ -154,6 +162,7 @@
           localStorage.setItem(input.id, input.checked);
           const span = input.nextElementSibling;
           span.classList.toggle("completed", input.checked);
+          checkAllComplete(); // ✅ 체크 완료 감지
         });
       });
     }
