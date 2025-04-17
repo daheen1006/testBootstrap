@@ -8,7 +8,7 @@
     body {
       font-family: 'Noto Sans KR', sans-serif;
       background-color: #fef8f8;
-      background-image: url('https://i.ibb.co/MyLm7bWJ/Chat-GPT-Image-2025-4-18-12-01-33.png');
+      background-image: url('https://i.ibb.co/MyLm7bWJ/Chat-GPT-Image-2025-4-18-12-01-33.png'); 
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
@@ -34,12 +34,13 @@
 
     h1 {
       font-size: 1.8rem;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
     }
 
     .weather {
       font-size: 1.1rem;
-      margin: 15px 0;
+      margin-bottom: 25px;
+      line-height: 1.6;
     }
 
     .routine {
@@ -82,20 +83,66 @@
   </div>
 
   <script>
-    const apiKey = "ae2dd5af466f227db77a00f5aac8972d";
+    const apiKey = "ae2dd5af466f227db77a00f5aac8972d"; 
 
-    const routinesByWeather = {
-      clear: ["러닝 20분 + 스트레칭", "공원 산책", "요가 루틴: 태양경배 자세 중심", "댄스 다이어트 영상 따라하기", "자전거 타기"],
-      rain: ["실내 요가 + 명상", "전신 스트레칭", "고요한 무드의 필라테스", "홈트 10분 루틴 (전신)", "계단 오르기"],
-      snow: ["실내 스텝 & 상체 근력운동", "스노우 감성 요가", "자세 교정 스트레칭", "겨울 테마 홈트", "균형 잡기 중심 루틴"],
-      cloud: ["실내 스텝 워킹", "댄스 커버 영상 따라하기", "플랭크 & 스쿼트 루틴", "스트레칭 + 복부 집중 루틴", "고요한 아침 산책"],
-      mist: ["느리게 하는 요가", "목, 어깨 스트레칭 루틴", "체형 교정 운동", "조용한 실내 워킹", "요가 + 호흡 명상"],
-      default: ["조용한 음악 듣기", "감정일기 쓰기", "명상 5분", "좋아하는 차 한잔", "감정 정리 노트 쓰기"]
+    const weatherEmojis = {
+      clear: "☀",
+      rain: "🌧",
+      snow: "❄",
+      cloud: "☁",
+      mist: "🌫",
+      default: "🌈"
     };
 
-    function pickRandom(array, count) {
-      const shuffled = [...array].sort(() => 0.5 - Math.random());
-      return shuffled.slice(0, count);
+    const moodLines = {
+      clear: [
+        "햇살 가득한 하루, 당신도 빛나요 🌞",
+        "오늘은 하늘처럼 기분도 맑게 ☀",
+        "가볍고 상쾌한 하루 되세요!"
+      ],
+      cloud: [
+        "구름처럼 잔잔한 하루가 될 거예요 ☁",
+        "느긋한 마음으로 여유를 가져봐요",
+        "오늘은 부드러운 흐름을 따라가요 🌫"
+      ],
+      rain: [
+        "비처럼 감정을 씻어내는 하루가 되길 🌧",
+        "고요한 비, 마음도 잠시 쉬어가요",
+        "따뜻한 차 한잔의 여유 추천해요 🍵"
+      ],
+      snow: [
+        "하얀 눈처럼 차분하고 맑은 하루 ❄",
+        "오늘은 따뜻한 마음으로 시작해요 🧣",
+        "소복소복 좋은 일 쌓이는 하루가 되길"
+      ],
+      mist: [
+        "흐릿해도 괜찮아요, 천천히 걸어가요 🌫",
+        "나를 돌아보는 시간도 필요해요",
+        "부드러운 하루, 당신을 응원해요"
+      ],
+      default: [
+        "당신의 하루가 향기로 가득하길 🌼",
+        "지금 이 순간도 충분히 괜찮아요",
+        "나 자신에게 친절해지는 하루 되세요 🍀"
+      ]
+    };
+
+    const routinesByWeather = {
+      clear: ["러닝 20분 + 스트레칭", "공원 산책", "요가 루틴: 태양경배 자세 중심", "자전거 타기", "댄스 다이어트 영상 따라하기"],
+      rain: ["실내 요가 + 명상", "전신 스트레칭", "홈트 10분 루틴 (전신)", "계단 오르기", "고요한 무드의 필라테스"],
+      snow: ["스노우 감성 요가", "자세 교정 스트레칭", "겨울 테마 홈트", "실내 스텝 + 상체 근력운동", "균형 잡기 루틴"],
+      cloud: ["실내 스텝 워킹", "댄스 커버 따라하기", "스트레칭 + 복부 집중 루틴", "플랭크 & 스쿼트 루틴", "고요한 산책"],
+      mist: ["목, 어깨 스트레칭 루틴", "요가 + 호흡 명상", "느리게 하는 요가", "체형 교정 운동", "조용한 실내 워킹"],
+      default: ["감정일기 쓰기", "좋아하는 음악 듣기", "명상 5분", "따뜻한 차 한잔", "좋아하는 노래 흥얼거리기"]
+    };
+
+    function pickRandom(arr, n = 3) {
+      return arr.sort(() => 0.5 - Math.random()).slice(0, n);
+    }
+
+    function getMoodLine(type) {
+      const list = moodLines[type] || moodLines["default"];
+      return list[Math.floor(Math.random() * list.length)];
     }
 
     function renderRoutineList(routines, weatherCode) {
@@ -127,19 +174,24 @@
 
     async function getWeather(lat, lon) {
       const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&lang=kr`);
-      const data = await res.json();
-      return data;
+      return await res.json();
     }
 
     navigator.geolocation.getCurrentPosition(async (pos) => {
       const { latitude, longitude } = pos.coords;
       try {
-        const weatherData = await getWeather(latitude, longitude);
-        const weatherCode = weatherData.weather[0].main.toLowerCase();
-        const tempC = (weatherData.main.temp - 273.15).toFixed(1);
+        const data = await getWeather(latitude, longitude);
+        const weatherCode = data.weather[0].main.toLowerCase();
+        const emoji = weatherEmojis[weatherCode] || weatherEmojis["default"];
+        const moodLine = getMoodLine(weatherCode);
+        const tempC = (data.main.temp - 273.15).toFixed(1);
+        const description = data.weather[0].description;
+        const city = data.name || "현재 위치";
 
-        document.getElementById("weather").innerText =
-          `현재 날씨: ${weatherData.weather[0].description} (${tempC}°C)`;
+        document.getElementById("weather").innerHTML =
+          `📍 ${city}는 ${description} ${emoji}<br/>
+           🌡 현재 온도: ${tempC}°C<br/>
+           💬 ${moodLine}`;
 
         const routines = pickRandom(routinesByWeather[weatherCode] || routinesByWeather["default"], 3);
         renderRoutineList(routines, weatherCode);
