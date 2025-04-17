@@ -40,7 +40,7 @@
 
   <script>
     async function getWeather(lat, lon) {
-      const apiKey = '여기에_네_API_키_넣기'; // ← 여기 OpenWeather API 키 삽입
+      const apiKey = 'ae2dd5af466f227db77a00f5aac8972d'; // 
       const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&lang=kr&units=metric`);
       const data = await response.json();
       return data;
