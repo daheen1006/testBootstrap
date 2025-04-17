@@ -17,57 +17,47 @@
       padding: 50px;
       animation: fadeIn 1.5s ease-in;
     }
-
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
-
     .box {
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.92);
       padding: 30px;
       border-radius: 20px;
       max-width: 600px;
       margin: auto;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
-
     h1 {
       font-size: 1.8rem;
       margin-bottom: 10px;
     }
-
     .weather {
       font-size: 1.1rem;
       margin: 15px 0;
     }
-
     .routine {
       font-size: 1rem;
       font-weight: 500;
       margin: 20px 0 30px;
       text-align: left;
     }
-
     .routine h3 {
       font-size: 1.2rem;
       margin: 15px 0 5px;
     }
-
     ul {
       list-style: none;
       padding: 0;
     }
-
     li {
       text-align: left;
       margin: 6px 0;
     }
-
     input[type="checkbox"] {
       margin-right: 8px;
     }
-
     .completed {
       text-decoration: line-through;
       opacity: 0.6;
@@ -152,11 +142,3 @@
   </script>
 </body>
 </html>
-"""
-
-# 저장
-path = "/mnt/data/spring_routine_page.html"
-with open(path, "w", encoding="utf-8") as f:
-    f.write(spring_html_code)
-
-path
