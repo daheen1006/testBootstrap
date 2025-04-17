@@ -1,57 +1,75 @@
+# HTML 전체 코드: 봄 일러스트 배경, 깔끔한 스타일, 루틴 랜덤 3개, 체크 가능
+spring_html_code = """
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>오늘의 감정 루틴</title>
+  <title>🌸 오늘의 감정 루틴</title>
   <style>
     body {
       font-family: 'Noto Sans KR', sans-serif;
-      background-image: url('https://images.unsplash.com/photo-1589880043046-ea51145a1e1c?auto=format&fit=crop&w=1950&q=80');
+      background-color: #fef8f8;
+      background-image: url('https://i.ibb.co/jM4D5f0/spring-trees.png');
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
       color: #333;
       text-align: center;
       padding: 50px;
+      animation: fadeIn 1.5s ease-in;
     }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
     .box {
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.9);
       padding: 30px;
       border-radius: 20px;
       max-width: 600px;
       margin: auto;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
+
     h1 {
       font-size: 1.8rem;
       margin-bottom: 10px;
     }
+
     .weather {
       font-size: 1.1rem;
       margin: 15px 0;
     }
+
     .routine {
       font-size: 1rem;
       font-weight: 500;
       margin: 20px 0 30px;
       text-align: left;
     }
+
     .routine h3 {
       font-size: 1.2rem;
       margin: 15px 0 5px;
     }
+
     ul {
       list-style: none;
       padding: 0;
     }
+
     li {
       text-align: left;
       margin: 6px 0;
     }
+
     input[type="checkbox"] {
       margin-right: 8px;
     }
+
     .completed {
       text-decoration: line-through;
       opacity: 0.6;
@@ -120,10 +138,10 @@
       try {
         const weatherData = await getWeather(latitude, longitude);
         const weatherCode = weatherData.weather[0].main.toLowerCase();
-        const tempCelsius = (weatherData.main.temp - 273.15).toFixed(1);
+        const tempC = (weatherData.main.temp - 273.15).toFixed(1);
 
         document.getElementById("weather").innerText =
-          `현재 날씨: ${weatherData.weather[0].description} (${tempCelsius}°C)`;
+          `현재 날씨: ${weatherData.weather[0].description} (${tempC}°C)`;
 
         const routines = pickRandom(routinesByWeather[weatherCode] || routinesByWeather["default"], 3);
         renderRoutineList(routines, weatherCode);
@@ -136,3 +154,11 @@
   </script>
 </body>
 </html>
+"""
+
+# 저장
+path = "/mnt/data/spring_routine_page.html"
+with open(path, "w", encoding="utf-8") as f:
+    f.write(spring_html_code)
+
+path
