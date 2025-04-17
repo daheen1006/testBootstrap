@@ -2,138 +2,161 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>	오늘, 괜찮았나요? 🌱</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>오늘, 괜찮았나요? 🌱</title>
   <style>
     body {
       font-family: 'Noto Sans KR', sans-serif;
-      background-color: #fef8f8;
       background-image: url('https://i.ibb.co/MyLm7bWJ/Chat-GPT-Image-2025-4-18-12-01-33.png');
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
-      background-color: #fef8f8;
+      margin: 0;
+      padding: 20px;
       color: #333;
-      text-align: center;
-      padding: 50px;
     }
-    .box {
-      background: rgba(255, 255, 255, 0.92);
-      padding: 30px;
-      border-radius: 20px;
+    .container {
       max-width: 600px;
       margin: auto;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      background-color: rgba(255,255,255,0.7);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 10px;
+    .weather-box {
+      text-align: center;
+      font-size: 1.2rem;
+      margin-bottom: 24px;
     }
-    .weather {
-      font-size: 1.1rem;
-      margin-bottom: 25px;
-      line-height: 1.6;
+    .routine-box h3 {
+      margin-top: 24px;
+      font-size: 1.2rem;
+      color: #444;
     }
-    .content {
-      text-align: left;
-      font-size: 1rem;
-      margin-top: 30px;
+    .routine-box ul {
+      padding-left: 20px;
     }
-    .content p {
+    .routine-box li {
       margin: 8px 0;
+    }
+    input[type="checkbox"] {
+      transform: scale(1.2);
+      margin-right: 8px;
+    }
+    .footer {
+      text-align: center;
+      font-size: 0.9rem;
+      margin-top: 30px;
+      color: #777;
     }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h1>🌸 오늘의 감정, 나를 위한 루틴 🌼</h1>
-    <div id="weather" class="weather">날씨 정보를 불러오는 중...</div>
-    <div id="content" class="content"></div>
+  <div class="container">
+    <div class="weather-box">
+      <p>📍 <span id="city">...</span>는 <span id="weather">...</span> <span id="weatherIcon"></span></p>
+      <p>🌡 현재 온도: <span id="temperature">...</span>°C</p>
+      <p>💬 <span id="quote">기분 좋은 하루가 되길 바래요 🍀</span></p>
+    </div>
+
+    <div class="routine-box" id="routineContainer"></div>
+
+    <div class="footer">내 마음을 위한 작은 루틴 ✨</div>
   </div>
 
   <script>
-    const apiKey = "ae2dd5af466f227db77a00f5aac8972d"; 
-
-    const contentByWeather = {
-      clear: {
-        운동: ["러닝 20분 + 스트레칭", "공원 산책", "요가 루틴", "자전거 타기", "댄스 다이어트 영상 따라하기"],
-        음악: ["빌리 아일리시 – My Future", "선우정아 – 도망가자"],
-        음식: ["시리얼 + 과일 + 요거트", "샐러드 + 닭가슴살", "아보카도 오픈 샌드위치", "과일 주스", "그릭요거트볼"],
-        색: ["노란색", "하늘색", "연두색", "라벤더", "민트"],
-        운세: [
-          "오늘은 당신이 빛나는 날이에요.",
-          "새로운 기회를 잡을 좋은 날이에요.",
-          "기분 좋은 일이 생길 운세!",
-          "에너지를 표현해보세요.",
-          "웃는 얼굴에 복이 와요 :)"
-        ],
-        감사일기: ["오늘 하늘을 본 순간", "걷는 동안의 기분", "따뜻한 햇살"]
+    const routines = {
+      '맑음': {
+        운동: ['러닝 20분 + 스트레칭', '공원 산책', '요가 루틴: 태양경배 자세 중심', '자전거 타기', '홈트: 댄스 다이어트 영상 따라하기'],
+        음악: ['빌리 아일리시 – “My Future”', '선우정아 – “도망가자”'],
+        음식: ['시리얼 + 과일 + 요거트', '샐러드 + 닭가슴살', '아보카도 오픈 샌드위치'],
+        색: ['노란색', '하늘색', '연두색', '라벤더', '민트']
       },
-      rain: {
-        운동: ["실내 요가 + 명상", "전신 스트레칭", "필라테스", "홈트 10분", "계단 오르기"],
-        음악: ["이소라 – 바람이 분다", "아이유 – Rain Drop", "백예린 – Bye bye my blue"],
-        음식: ["우동", "감자전 + 막걸리", "바나나우유와 쿠키", "스프 + 토스트", "카레라이스"],
-        색: ["남색", "진회색", "청록", "와인색", "흰색"],
-        운세: [
-          "감정을 그대로 느껴도 괜찮아요.",
-          "잠깐의 여유가 회복을 줘요.",
-          "오늘은 무리하지 말아요.",
-          "비 오는 날엔 내면을 돌아봐요."
-        ],
-        감사일기: ["차 한잔 마신 여유", "창밖 풍경", "조용한 시간"]
+      '흐림': {
+        운동: ['실내 스텝 워킹', '댄스 커버 영상 따라하기', '플랭크 & 스쿼트 루틴'],
+        음악: ['어반자카파 – “그날에 우리”', 'Dean – “Instagram”'],
+        음식: ['오트밀 + 바나나', '달걀 토스트', '닭죽'],
+        색: ['연보라', '진회색', '올리브']
+      },
+      '비': {
+        운동: ['실내 요가 + 명상', '계단 오르기', '홈트 10분 루틴'],
+        음악: ['아이유 – “Rain Drop”', '백예린 – “Bye bye my blue”'],
+        음식: ['감자전 + 막걸리', '따뜻한 국수 or 우동', '스프 + 토스트'],
+        색: ['청록', '와인색', '흰색']
       }
     };
 
-    const icons = {
-      운동: "💪 운동",
-      음악: "🎧 음악",
-      음식: "🍽 음식",
-      색: "🎨 행운의 색",
-      운세: "🔮 오늘의 운세",
-      감사일기: "📓 감사일기 제안"
+    const quotes = [
+      '오늘도 나에게 친절해지기 🌱',
+      '하늘처럼 가볍고 맑은 하루 되길 ☀',
+      '너무 애쓰지 않아도 괜찮아요 🌷',
+      '마음이 하는 말을 들어보세요 💬',
+      '작은 루틴이 큰 변화를 만들어요 🌿'
+    ];
+
+    const getRandomItems = (arr, n) => arr.sort(() => 0.5 - Math.random()).slice(0, n);
+
+    const getWeatherEmoji = (main) => {
+      switch (main) {
+        case 'Clear': return '☀';
+        case 'Clouds': return '☁';
+        case 'Rain': case 'Drizzle': return '🌧';
+        case 'Snow': return '❄';
+        default: return '🌤';
+      }
     };
 
-    function pickRandom(arr) {
-      return arr[Math.floor(Math.random() * arr.length)];
-    }
+    const convertToCelsius = (kelvin) => (kelvin - 273.15).toFixed(1);
 
-    function pickRandomKeys(obj, count) {
-      const keys = Object.keys(obj);
-      const shuffled = keys.sort(() => 0.5 - Math.random());
-      return shuffled.slice(0, count);
-    }
+    const translateWeather = (eng) => {
+      const map = { 'Clear': '맑음', 'Clouds': '흐림', 'Rain': '비', 'Drizzle': '비', 'Snow': '눈', 'Mist': '안개' };
+      return map[eng] || '맑음';
+    };
 
-    async function getWeather(lat, lon) {
-      const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&lang=kr`);
-      return await res.json();
-    }
-
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      const { latitude, longitude } = pos.coords;
-      try {
-        const data = await getWeather(latitude, longitude);
-        const weatherCode = data.weather[0].main.toLowerCase();
-        const tempC = (data.main.temp - 273.15).toFixed(1);
-        const city = data.name || "현재 위치";
-
-        document.getElementById("weather").innerHTML =
-          `📍 ${city} | ${data.weather[0].description} | ${tempC}°C`;
-
-        const categorySet = contentByWeather[weatherCode] || contentByWeather["clear"];
-        const pickedCategories = pickRandomKeys(categorySet, 3);
-        const container = document.getElementById("content");
-
-        pickedCategories.forEach(cat => {
-          const value = pickRandom(categorySet[cat]);
-          container.innerHTML += `<p><strong>${icons[cat]}:</strong> ${value}</p>`;
+    const displayRoutines = (weather) => {
+      const category = routines[weather] || routines['맑음'];
+      const container = document.getElementById('routineContainer');
+      let html = '';
+      for (let type in category) {
+        html += `<div><h3>🌸 ${type}</h3><ul>`;
+        getRandomItems(category[type], 3).forEach(item => {
+          html += `<li><label><input type="checkbox"/> ${item}</label></li>`;
         });
-
-      } catch {
-        document.getElementById("weather").innerText = "날씨 정보를 불러오지 못했어요 😢";
+        html += '</ul></div>';
       }
-    }, () => {
-      document.getElementById("weather").innerText = "위치 정보 사용이 차단되어 있어요.";
-    });
+      container.innerHTML = html;
+    };
+
+    const updateUI = (data) => {
+      const city = data.name;
+      const tempC = convertToCelsius(data.main.temp);
+      const weatherEng = data.weather[0].main;
+      const weatherKo = translateWeather(weatherEng);
+      const emoji = getWeatherEmoji(weatherEng);
+
+      document.getElementById('city').textContent = city;
+      document.getElementById('temperature').textContent = tempC;
+      document.getElementById('weather').textContent = weatherKo;
+      document.getElementById('weatherIcon').textContent = emoji;
+      document.getElementById('quote').textContent = quotes[Math.floor(Math.random() * quotes.length)];
+
+      displayRoutines(weatherKo);
+    };
+
+    const API_KEY = 'ae2dd5af466f227db77a00f5aac8972d';
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}`)
+          .then(res => res.json())
+          .then(data => updateUI(data))
+          .catch(() => alert('날씨 정보를 불러오지 못했습니다.'));
+      },
+      () => alert('위치 정보 접근이 필요합니다.')
+    );
   </script>
 </body>
 </html>
+
