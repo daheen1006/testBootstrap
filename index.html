@@ -15,12 +15,6 @@
       color: #333;
       text-align: center;
       padding: 50px;
-      animation: fadeIn 1.5s ease-in;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
     }
 
     .box {
@@ -46,7 +40,6 @@
     .routine {
       font-size: 1rem;
       font-weight: 500;
-      margin: 20px 0 30px;
       text-align: left;
     }
 
@@ -57,7 +50,7 @@
 
     li {
       text-align: left;
-      margin: 6px 0;
+      margin: 10px 0;
     }
 
     input[type="checkbox"] {
@@ -73,12 +66,29 @@
 <body>
   <div class="box">
     <h1>🌸 "내 마음의 NFC를 켜는 순간" 🌼</h1>
-    <div id="weather" class="weather">당신의 오늘을 살펴보고 있어요...</div>
+    <div id="weather" class="weather">날씨를 불러오는 중...</div>
     <div id="routine" class="routine"></div>
   </div>
 
   <script>
     const apiKey = "ae2dd5af466f227db77a00f5aac8972d";
+
+    const routinesByWeather = {
+      clear: {
+        운동: ["러닝 20분 + 스트레칭", "공원 산책"],
+        음악: ["도망가자 - 선우정아", "My Future - Billie Eilish"],
+        음식: ["아보카도 오픈 샌드위치", "샐러드 + 닭가슴살"],
+        색상: ["오늘의 컬러 ‘라벤더’를 옷, 물건, 이미지 등으로 실천했어요 🎨"],
+        운세: ["‘기분 좋은 일이 생길 운세!’를 되새기며 하루를 시작했어요 💫"]
+      },
+      default: {
+        운동: ["가벼운 스트레칭", "명상 5분"],
+        음악: ["좋아하는 음악 듣기"],
+        음식: ["따뜻한 차 한잔"],
+        색상: ["오늘의 컬러 ‘민트’를 소품이나 배경으로 활용했어요 🎨"],
+        운세: ["‘당신은 지금도 충분히 괜찮아요’라는 말을 마음에 새겼어요 💫"]
+      }
+    };
 
     const weatherEmojis = {
       clear: "☀",
@@ -91,59 +101,10 @@
 
     const moodLines = {
       clear: [
-        "햇살 가득한 하루, 당신도 빛나요 🌞",
         "오늘은 하늘처럼 기분도 맑게 ☀",
         "가볍고 상쾌한 하루 되세요!"
       ],
-      clouds: [
-        "구름처럼 잔잔한 하루가 될 거예요 ☁",
-        "느긋한 마음으로 여유를 가져봐요",
-        "오늘은 부드러운 흐름을 따라가요 🌫"
-      ],
-      rain: [
-        "비처럼 감정을 씻어내는 하루가 되길 🌧",
-        "고요한 비, 마음도 잠시 쉬어가요",
-        "따뜻한 차 한잔의 여유 추천해요 🍵"
-      ],
-      snow: [
-        "하얀 눈처럼 차분하고 맑은 하루 ❄",
-        "오늘은 따뜻한 마음으로 시작해요 🧣",
-        "소복소복 좋은 일 쌓이는 하루가 되길"
-      ],
-      mist: [
-        "흐릿해도 괜찮아요, 천천히 걸어가요 🌫",
-        "나를 돌아보는 시간도 필요해요",
-        "부드러운 하루, 당신을 응원해요"
-      ],
-      default: [
-        "당신의 하루가 향기로 가득하길 🌼",
-        "지금 이 순간도 충분히 괜찮아요",
-        "나 자신에게 친절해지는 하루 되세요 🍀"
-      ]
-    };
-
-    const routinesByWeather = {
-      clear: {
-        운동: ["러닝 20분 + 스트레칭", "공원 산책", "요가 루틴: 태양경배 자세 중심"],
-        음악: ["빌리 아일리시 – “My Future”", "선우정아 – “도망가자”"],
-        음식: ["시리얼 + 과일 + 요거트", "샐러드 + 닭가슴살"],
-        색: ["노란색", "라벤더", "하늘색"],
-        운세: ["오늘은 당신이 빛나는 날이에요.", "기분 좋은 일이 생길 운세!"]
-      },
-      rain: {
-        운동: ["실내 요가 + 명상", "계단 오르기"],
-        음악: ["아이유 – “Rain Drop”", "백예린 – “Bye bye my blue”"],
-        음식: ["감자전 + 막걸리", "우동"],
-        색: ["청록", "흰색"],
-        운세: ["감정을 그대로 느껴도 괜찮아요.", "오늘은 무리하지 말아요."]
-      },
-      default: {
-        운동: ["스트레칭", "명상 5분"],
-        음악: ["좋아하는 노래 듣기"],
-        음식: ["따뜻한 차 한잔"],
-        색: ["민트"],
-        운세: ["당신은 지금도 충분히 괜찮아요."]
-      }
+      default: ["지금 이 순간도 충분히 괜찮아요"]
     };
 
     function pickRandom(arr) {
@@ -152,6 +113,13 @@
 
     function pickRandomKeys(obj, count = 3) {
       return Object.keys(obj).sort(() => 0.5 - Math.random()).slice(0, count);
+    }
+
+    function getPostPositionFix(word) {
+      const lastChar = word[word.length - 1];
+      const uni = lastChar.charCodeAt(0);
+      const hasFinal = (uni - 44032) % 28 !== 0;
+      return hasFinal ? "은" : "는";
     }
 
     function getMoodLine(type) {
@@ -165,8 +133,8 @@
 
       const selectedCategories = pickRandomKeys(categoryData, 3);
       selectedCategories.forEach((category, i) => {
-        const options = categoryData[category];
-        const randomItem = pickRandom(options);
+        const items = categoryData[category];
+        const value = pickRandom(items);
         const id = `${weatherCode}-${category}-${i}`;
         const checked = localStorage.getItem(id) === 'true';
 
@@ -174,7 +142,7 @@
           <li>
             <label>
               <input type="checkbox" id="${id}" ${checked ? "checked" : ""}/>
-              <span class="${checked ? "completed" : ""}">[${category}] ${randomItem}</span>
+              <span class="${checked ? "completed" : ""}">[${category}] ${value}</span>
             </label>
           </li>`;
       });
@@ -205,15 +173,16 @@
         const tempC = (data.main.temp - 273.15).toFixed(1);
         const description = data.weather[0].description;
         const city = data.name || "현재 위치";
+        const particle = getPostPositionFix(city);
 
         document.getElementById("weather").innerHTML =
-          `📍 ${city}는 ${description} ${emoji}<br/>
+          `📍 ${city}${particle} ${description} ${emoji}<br/>
            🌡 현재 온도: ${tempC}°C<br/>
            💬 ${moodLine}`;
 
         const routineSet = routinesByWeather[weatherCode] || routinesByWeather["default"];
         renderRoutineListByCategory(routineSet, weatherCode);
-      } catch (e) {
+      } catch {
         document.getElementById("weather").innerText = "날씨 정보를 불러오지 못했어요 😢";
       }
     }, () => {
