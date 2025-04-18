@@ -16,7 +16,6 @@
       text-align: center;
       padding: 50px;
     }
-
     .box {
       background: rgba(255, 255, 255, 0.9);
       padding: 30px;
@@ -25,53 +24,53 @@
       margin: auto;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
-
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 15px;
-    }
-
-    .weather {
-      font-size: 1.1rem;
-      margin-bottom: 25px;
-      line-height: 1.6;
-    }
-
-    .routine {
-      font-size: 1rem;
-      font-weight: 500;
-      text-align: left;
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    li {
-      text-align: left;
-      margin: 10px 0;
-    }
-
-    input[type="checkbox"] {
-      margin-right: 8px;
-    }
-
-    .completed {
-      text-decoration: line-through;
-      opacity: 0.6;
-    }
+    h1 { font-size: 1.8rem; margin-bottom: 15px; }
+    .weather { font-size: 1.1rem; margin-bottom: 25px; line-height: 1.6; }
+    .routine { font-size: 1rem; font-weight: 500; text-align: left; }
+    ul { list-style: none; padding: 0; }
+    li { text-align: left; margin: 10px 0; }
+    input[type="checkbox"] { margin-right: 8px; }
+    .completed { text-decoration: line-through; opacity: 0.6; }
   </style>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <div class="box">
     <h1>🌸 "내 마음의 NFC를 켜는 순간" 🌼</h1>
     <div id="weather" class="weather">날씨를 불러오는 중...</div>
     <div id="routine" class="routine"></div>
+    <div id="status" style="margin-top:20px; font-weight: bold;"></div>
   </div>
 
   <script>
+    // 🔐 너의 API 키 및 Firebase 정보 입력
     const apiKey = "ae2dd5af466f227db77a00f5aac8972d";
+    const firebaseConfig = {
+      apiKey: "너의_API_KEY",
+      authDomain: "너의_프로젝트.firebaseapp.com",
+      projectId: "너의_프로젝트_ID",
+      storageBucket: "너의_프로젝트.appspot.com",
+      messagingSenderId: "1234567890",
+      appId: "너의_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function getAnonUserId() {
+      let id = localStorage.getItem("anonUserId");
+      if (!id) {
+        id = crypto.randomUUID();
+        localStorage.setItem("anonUserId", id);
+      }
+      return id;
+    }
+
+    const userId = getAnonUserId();
+    const today = new Date().toISOString().slice(0, 10);
 
     const routinesByWeather = {
       clear: {
@@ -91,19 +90,11 @@
     };
 
     const weatherEmojis = {
-      clear: "☀",
-      rain: "🌧",
-      snow: "❄",
-      clouds: "☁",
-      mist: "🌫",
-      default: "🌈"
+      clear: "☀", rain: "🌧", snow: "❄", clouds: "☁", mist: "🌫", default: "🌈"
     };
 
     const moodLines = {
-      clear: [
-        "오늘은 하늘처럼 기분도 맑게 ☀",
-        "가볍고 상쾌한 하루 되세요!"
-      ],
+      clear: ["오늘은 하늘처럼 기분도 맑게 ☀", "가볍고 상쾌한 하루 되세요!"],
       default: ["지금 이 순간도 충분히 괜찮아요"]
     };
 
@@ -127,19 +118,38 @@
       return pickRandom(list);
     }
 
+    async function markFirestoreCompleted() {
+      const docRef = db.collection("routineRecords").doc(userId);
+      const docSnap = await docRef.get();
+      let data = docSnap.exists ? docSnap.data() : { records: [], streak: 0 };
+
+      const alreadyMarked = data.records.find(r => r.date === today);
+      if (alreadyMarked) {
+        document.getElementById("status").innerText = "✅ 오늘 이미 기록했어요!";
+        return;
+      }
+
+      data.records.push({ date: today, completed: true });
+      data.streak += 1;
+
+      await docRef.set(data);
+      document.getElementById("status").innerText = `🌿 출석 완료! 연속 ${data.streak}일차`;
+    }
+
     function checkAllComplete() {
       const all = document.querySelectorAll("input[type='checkbox']");
       const completed = Array.from(all).filter(input => input.checked);
       if (all.length > 0 && completed.length === all.length) {
         alert("🎉 오늘의 루틴을 모두 완료했어요! 스스로를 칭찬해 주세요 💐");
+        markFirestoreCompleted();
       }
     }
 
     function renderRoutineListByCategory(categoryData, weatherCode) {
       const container = document.getElementById('routine');
       container.innerHTML = "<h3>📝 오늘의 추천 루틴</h3><ul>";
-
       const selectedCategories = pickRandomKeys(categoryData, 3);
+
       selectedCategories.forEach((category, i) => {
         const items = categoryData[category];
         const value = pickRandom(items);
@@ -160,9 +170,8 @@
       document.querySelectorAll("input[type='checkbox']").forEach(input => {
         input.addEventListener("change", () => {
           localStorage.setItem(input.id, input.checked);
-          const span = input.nextElementSibling;
-          span.classList.toggle("completed", input.checked);
-          checkAllComplete(); // ✅ 체크 완료 감지
+          input.nextElementSibling.classList.toggle("completed", input.checked);
+          checkAllComplete();
         });
       });
     }
