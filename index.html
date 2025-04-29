@@ -5,16 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>오늘, 괜찮았나요? 🌱</title>
   <style>
-    body {
-      font-family: 'Noto Sans KR', sans-serif;
-      background-color: #fef8f8;
-      background-image: url('https://i.ibb.co/WNMjKVXb/Kakao-Talk-Photo-2025-04-29-21-20-44.png');
-      background-size: cover;
-      background-position: center;
-      color: #333;
-      text-align: center;
-      padding: 50px;
-    }
+  body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background-color: #fef8f8;
+  background-image: url('https://i.ibb.co/WNMjKVXb/Kakao-Talk-Photo-2025-04-29-21-20-44.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  background-attachment: scroll; /* ← 고정(fixed) 대신 scroll */
+  min-height: 100vh; /* 배경이 전체 화면에 꽉 차도록 */
+  margin: 0;
+  padding: 50px;
+  color: #333;
+  text-align: center;
+}
 
     .box {
       background: rgba(255, 255, 255, 0.9);
