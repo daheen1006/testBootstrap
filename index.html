@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>내 마음의 NFC</title>
+  <title>내 마음에 NFC를 켜는 순간</title>
   <style>
     body {
       margin: 0;
@@ -16,73 +16,131 @@
       background-position: bottom center;
       background-size: contain;
       min-height: 100vh;
-      padding-bottom: 200px; /* ✅ 토끼 공간 확보 */
+      padding-bottom: 220px; /* 토끼 공간 */
     }
 
-    .header {
-      background-color: #a3cf6b;
+    .title {
       text-align: center;
-      padding: 15px;
+      font-size: 1.6rem;
       margin-top: 30px;
-      border-radius: 10px;
       font-weight: bold;
+      line-height: 1.4;
+    }
+
+    .highlight-pink { color: #f472b6; }
+    .highlight-blue { color: #60a5fa; }
+
+    .subtitle {
+      text-align: center;
+      background-color: #b3d675;
+      padding: 8px;
+      margin: 20px 0;
+      border-radius: 10px;
+      font-weight: 500;
     }
 
     .weather {
+      display: inline-block;
       background: linear-gradient(to bottom, #3b82f6, #93c5fd);
       color: white;
-      padding: 30px 20px;
+      padding: 20px;
       border-radius: 12px;
-      margin: 20px 0;
+      width: 160px;
+      margin-bottom: 20px;
     }
 
     .box {
       background-color: #fffcf2;
       border-radius: 12px;
-      padding: 20px;
+      padding: 15px 20px;
       margin: 10px 0;
+      font-size: 0.95rem;
+    }
+
+    .box strong {
+      display: block;
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+
+    .link {
+      text-align: right;
+      color: #b45309;
+      font-weight: bold;
+      font-size: 0.9rem;
+      margin-top: 5px;
+      text-decoration: underline;
     }
 
     .journal {
       background-color: #6cb36c;
       color: white;
       border-radius: 12px;
-      padding: 30px 20px;
+      padding: 20px;
       margin-top: 20px;
     }
 
     .journal h2 {
       margin-top: 0;
+      font-size: 1.2rem;
+    }
+
+    .journal textarea {
+      width: 100%;
+      border: none;
+      background: transparent;
+      border-bottom: 1px dashed #fff;
+      color: #fff;
+      padding: 6px 0;
+      font-size: 1rem;
+      line-height: 1.8;
+      resize: none;
+      outline: none;
+    }
+
+    .journal textarea::placeholder {
+      color: #e2e8f0;
     }
   </style>
 </head>
 <body>
 
-  <div class="header">오늘은 하늘처럼 기분도 맑게!</div>
+  <div class="title">
+    내 <span class="highlight-pink">마음</span>에 <span class="highlight-blue">NFC</span>를 켜는 순간
+  </div>
+
+  <div class="subtitle">
+    오늘은 하늘처럼 기분도 맑게!
+  </div>
 
   <div class="weather">
-    <h2>☀ 16.1°C</h2>
-    <p>인천광역시 / 맑음</p>
+    <div style="font-size: 1.4rem;">☀ 16.1°C</div>
+    <div style="font-size: 0.9rem; margin-top: 4px;">인천광역시 / 맑음</div>
   </div>
 
   <div class="box">
-    <strong>🏋 Workout</strong><br/>
-    공원 산책을 추천드려요. <br/>좋은 공기를 마시며 근처 공원을 걸어보세요!
+    <strong>🏋 Workout</strong>
+    공원 산책을 추천드려요. 좋은 공기를 마시며, 근처 공원을 산책해보는 건 어때요?
+    <div class="link">근처 공원 찾아보기</div>
   </div>
 
   <div class="box">
-    <strong>🎵 Music</strong><br/>
-    빌리 아일리시의 "MY FUTURE"를 들어보세요. <br/>마음을 맑게 해줘요.
+    <strong>🎵 Music</strong>
+    빌리 아일리시의 “MY FUTURE”를 추천드려요.
+    <div class="link">노래 들으러 가기</div>
   </div>
 
   <div class="box">
-    <strong>🥑 Food</strong><br/>
-    아보카도 오픈 샌드위치를 추천해요! <br/>든든하고 상큼한 한끼 😊
+    <strong>🥑 Food</strong>
+    아보카도 오픈 샌드위치를 추천드려요.
+    <div class="link">맛집 찾으러 가기</div>
   </div>
 
   <div class="journal">
     <h2>📓 감사일기 적기</h2>
-    <p>오늘 감사한 일을 적어보세요!</p>
+    <textarea rows="4" placeholder="오늘 감사한 일을 적어보세요 :)"></textarea>
+    <textarea rows="1" placeholder=""></textarea>
+    <textarea rows="1" placeholder=""></textarea>
   </div>
 
 </body>
