@@ -16,7 +16,7 @@
       background-position: bottom center;
       background-size: contain;
       min-height: 100vh;
-      padding-bottom: 220px; /* 토끼 공간 */
+      padding-bottom: 220px;
     }
 
     .title {
@@ -87,54 +87,38 @@
 
     .journal textarea {
       width: 100%;
+      height: 120px;
       border: none;
-      background: transparent;
-      border-bottom: 1px dashed #fff;
-      color: #fff;
-      padding: 6px 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 23px,
+        #ffffff44 24px
+      );
+      color: white;
       font-size: 1rem;
-      line-height: 1.8;
+      line-height: 24px;
+      padding: 8px;
       resize: none;
       outline: none;
+      box-sizing: border-box;
     }
 
-    .journal textarea::placeholder {
-      color: #e2e8f0;
+    .journal button {
+      margin-top: 10px;
+      padding: 6px 12px;
+      background-color: #fef08a;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
   <div class="title">
-    내 <span class="highlight-pink">마음</span>에 <span class="highlight-blue">NFC</span>를 켜는 순간
-  </div>
-
-  <div class="subtitle">
-    오늘은 하늘처럼 기분도 맑게!
-  </div>
-
-  <div class="weather">
-    <div style="font-size: 1.4rem;">☀ 16.1°C</div>
-    <div style="font-size: 0.9rem; margin-top: 4px;">인천광역시 / 맑음</div>
-  </div>
-
-  <div class="box">
-    <strong>🏋 Workout</strong>
-    공원 산책을 추천드려요. 좋은 공기를 마시며, 근처 공원을 산책해보는 건 어때요?
-    <div class="link">근처 공원 찾아보기</div>
-  </div>
-
-  <div class="box">
-    <strong>🎵 Music</strong>
-    빌리 아일리시의 “MY FUTURE”를 추천드려요.
-    <div class="link">노래 들으러 가기</div>
-  </div>
-
-  <div class="box">
-    <strong>🥑 Food</strong>
-    아보카도 오픈 샌드위치를 추천드려요.
-    <div class="link">맛집 찾으러 가기</div>
-  </div>
+    내 <span class="highlight-pink">마음</span>에 <span class="highlight-blue">NFC</s
 
   <div class="journal">
     <h2>📓 감사일기 적기</h2>
