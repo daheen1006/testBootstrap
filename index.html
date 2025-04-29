@@ -3,128 +3,87 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>내 마음에 NFC를 켜는 순간</title>
+  <title>내 마음의 NFC</title>
   <style>
-   body {
-  margin: 0;
-  padding: 20px;
-  font-family: 'Noto Sans KR', sans-serif;
-  background-color: #fef3c7; /* 연노랑 배경 */
-  color: #333;
-  background-image: url('https://i.ibb.co/WNMjKVXb/Kakao-Talk-Photo-2025-04-29-21-20-44.png');
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: bottom center;
-  min-height: 100vh;
-}
-
-
-    h1 {
-      font-size: 1.8rem;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    .highlight {
-      color: #f472b6;
-      font-weight: bold;
-    }
-
-    .subtext {
-      text-align: center;
-      margin-bottom: 30px;
-      background-color: #d9f99d;
-      padding: 10px;
-      border-radius: 10px;
-      font-weight: 500;
-    }
-
-    .section {
-      background: #fffbe6;
-      border-radius: 16px;
-      padding: 20px;
-      margin: 20px auto;
-      max-width: 600px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    }
-
-    .section h2 {
-      font-size: 1.2rem;
-      margin-bottom: 10px;
-    }
-
-    .section p {
-      margin: 5px 0 10px;
-    }
-
-    .section a {
-      display: inline-block;
-      margin-top: 5px;
-      color: #b45309;
-      font-weight: bold;
-      text-decoration: underline;
-    }
-
-    .section.diary textarea {
-      width: 100%;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 10px;
-      resize: vertical;
-      font-size: 1rem;
-    }
-
-    .weather-box {
-      background: linear-gradient(to right, #60a5fa, #93c5fd);
-      color: white;
-      text-align: center;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-
-    .weather-box h2 {
-      font-size: 1.8rem;
+    body {
       margin: 0;
+      padding: 0 20px;
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #fef3c7;
+      color: #333;
+      background-image: url('https://i.ibb.co/WNMjKVXb/Kakao-Talk-Photo-2025-04-29-21-20-44.png');
+      background-repeat: no-repeat;
+      background-position: bottom center;
+      background-size: contain;
+      min-height: 100vh;
+      padding-bottom: 200px; /* ✅ 토끼 공간 확보 */
     }
 
-    .weather-box p {
-      font-size: 1rem;
-      margin-top: 8px;
+    .header {
+      background-color: #a3cf6b;
+      text-align: center;
+      padding: 15px;
+      margin-top: 30px;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+
+    .weather {
+      background: linear-gradient(to bottom, #3b82f6, #93c5fd);
+      color: white;
+      padding: 30px 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+    }
+
+    .box {
+      background-color: #fffcf2;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 10px 0;
+    }
+
+    .journal {
+      background-color: #6cb36c;
+      color: white;
+      border-radius: 12px;
+      padding: 30px 20px;
+      margin-top: 20px;
+    }
+
+    .journal h2 {
+      margin-top: 0;
     }
   </style>
 </head>
 <body>
-  <h1>내 <span class="highlight">마음</span>에 <strong style="color:#60a5fa;">NFC</strong>를 켜는 순간</h1>
-  <div class="subtext">오늘은 하늘처럼 기분도 맑게!</div>
 
-  <div id="weather-box" class="weather-box">
+  <div class="header">오늘은 하늘처럼 기분도 맑게!</div>
+
+  <div class="weather">
     <h2>☀ 16.1°C</h2>
     <p>인천광역시 / 맑음</p>
   </div>
 
-  <div class="section workout">
-    <h2>🏋 Workout</h2>
-    <p>공원 산책을 추천드려요.<br>좋은 공기를 마시며, 근처 공원을 산책 해 보는게 어때요?</p>
-    <a href="#">근처 공원 찾아보기</a>
+  <div class="box">
+    <strong>🏋 Workout</strong><br/>
+    공원 산책을 추천드려요. <br/>좋은 공기를 마시며 근처 공원을 걸어보세요!
   </div>
 
-  <div class="section music">
-    <h2>🎵 Music</h2>
-    <p>빌리 아일리시의 “MY FUTURE”를 추천드려요.<br>마음을 맑게 해주는 노래예요.</p>
-    <a href="#">노래 들으러 가기</a>
+  <div class="box">
+    <strong>🎵 Music</strong><br/>
+    빌리 아일리시의 "MY FUTURE"를 들어보세요. <br/>마음을 맑게 해줘요.
   </div>
 
-  <div class="section food">
-    <h2>🥪 Food</h2>
-    <p>아보카도 오픈 샌드위치를 추천드려요.<br>든든하고 상큼한 메뉴예요.</p>
-    <a href="#">맛집 찾으러 가기</a>
+  <div class="box">
+    <strong>🥑 Food</strong><br/>
+    아보카도 오픈 샌드위치를 추천해요! <br/>든든하고 상큼한 한끼 😊
   </div>
 
-  <div class="section diary">
+  <div class="journal">
     <h2>📓 감사일기 적기</h2>
-    <textarea rows="4" placeholder="오늘 감사한 일을 적어보세요!"></textarea>
+    <p>오늘 감사한 일을 적어보세요!</p>
   </div>
+
 </body>
 </html>
-
