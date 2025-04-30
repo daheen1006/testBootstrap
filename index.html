@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>오늘, 괜찮았나요? 🌱</title>
-  
+
   <style>
     body {
       font-family: 'Noto Sans KR', sans-serif;
@@ -13,9 +13,9 @@
       background-repeat: no-repeat;
       background-size: contain;
       background-position: bottom center;
-      min-height: 100vh;
       margin: 0;
       padding: 40px 20px 220px;
+      min-height: 100vh;
       color: #333;
       text-align: center;
     }
@@ -118,16 +118,11 @@
     내 <span class="highlight-pink">마음</span>에 <span class="highlight-blue">NFC</span>를 켜는 순간
   </div>
 
-  <!-- 💬 랜덤 감성 멘트가 여기에 나옴 -->
-  <div id="subtitle" class="subtitle">기분 좋은 하루 되세요!</div>
+  <div id="subtitle" class="subtitle">오늘 하루, 마음이 환해지기를 🌼</div>
 
-  <!-- 날씨 박스 -->
   <div id="weather" class="weather">날씨를 불러오는 중...</div>
-
-  <!-- 루틴 -->
   <div id="routine" class="routine"></div>
 
-  <!-- 감사일기 -->
   <div class="journal">
     <h2>📓 감사일기 적기</h2>
     <p>오늘 감사한 일을 적어보세요 :)</p>
@@ -248,12 +243,9 @@
           const city = data.name || "현재 위치";
           const particle = getPostPositionFix(city);
 
-          // 날씨 표시
           document.getElementById("weather").innerHTML =
             `📍 ${city}${particle} ${description} ${emoji}<br/>
              🌡 현재 온도: ${tempC}°C`;
-
-          // 감성 멘트 표시
           document.getElementById("subtitle").innerText = moodLine;
 
           const routineSet = routinesByWeather[weatherCode] || routinesByWeather["default"];
@@ -284,3 +276,4 @@
   </script>
 </body>
 </html>
+
