@@ -4,6 +4,276 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>오늘, 괜찮았나요? 🌱</title>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #fef3c7;
+      background-image: url('https://i.ibb.co/WNMjKVXb/Kakao-Talk-Photo-2025-04-29-21-20-44.png');
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: bottom center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 40px 20px 220px;
+      color: #333;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 1.6rem;
+      font-weight: bold;
+      line-height: 1.4;
+    }
+
+    .highlight-pink { color: #f472b6; }
+    .highlight-blue { color: #60a5fa; }
+
+    .subtitle {
+      margin: 16px auto;
+      background-color: #b3d675;
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-weight: 500;
+    }
+
+    .weather {
+      background: linear-gradient(to bottom, #3b82f6, #93c5fd);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      width: 180px;
+      margin: 20px auto;
+    }
+
+    .routine {
+      text-align: left;
+      max-width: 600px;
+      margin: 0 auto 20px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      margin: 10px 0;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 8px;
+    }
+
+    .completed {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    .journal {
+      background-color: #6cb36c;
+      color: white;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .journal h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+    }
+
+    .journal input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px dashed #fff;
+      color: white;
+      font-size: 1rem;
+      padding: 6px 0;
+      outline: none;
+      margin-bottom: 10px;
+    }
+
+    .journal input::placeholder {
+      color: #e2e8f0;
+    }
+
+    .journal button {
+      margin-top: 10px;
+      padding: 8px 14px;
+      background-color: #fef08a;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="title">
+    내 <span class="highlight-pink">마음</span>에 <span class="highlight-blue">NFC</span>를 켜는 순간
+  </div>
+  <div class="subtitle">오늘은 하늘처럼 기분도 맑게!</div>
+  <div id="weather" class="weather">날씨를 불러오는 중...</div>
+  <div id="routine" class="routine"></div>
+  <div class="journal">
+    <h2>📓 감사일기 적기</h2>
+    <p>오늘 감사한 일을 적어보세요 :)</p>
+    <input type="text" id="line1" placeholder="첫 번째 감사한 일" />
+    <input type="text" id="line2" placeholder="두 번째 감사한 일" />
+    <input type="text" id="line3" placeholder="세 번째 감사한 일" />
+    <button onclick="saveDiary()">저장하기</button>
+  </div>
+
+  <script>
+    const apiKey = "ae2dd5af466f227db77a00f5aac8972d";
+
+    const routinesByWeather = {
+      clear: {
+        운동: ["러닝 20분 + 스트레칭", "공원 산책"],
+        음악: ["도망가자 - 선우정아", "My Future - Billie Eilish"],
+        음식: ["아보카도 오픈 샌드위치", "샐러드 + 닭가슴살"],
+        색상: ["오늘의 컬러 ‘라벤더’를 실천했어요 🎨"],
+        운세: ["‘기분 좋은 일이 생길 운세!’를 되새겼어요 💫"]
+      },
+      default: {
+        운동: ["가벼운 스트레칭", "명상 5분"],
+        음악: ["좋아하는 음악 듣기"],
+        음식: ["따뜻한 차 한잔"],
+        색상: ["오늘의 컬러 ‘민트’를 활용했어요 🎨"],
+        운세: ["‘당신은 지금도 충분히 괜찮아요’ 💫"]
+      }
+    };
+
+    const weatherEmojis = {
+      clear: "☀", rain: "🌧", snow: "❄", clouds: "☁", mist: "🌫", default: "🌈"
+    };
+
+    const moodLines = {
+      clear: ["오늘은 하늘처럼 기분도 맑게 ☀", "가볍고 상쾌한 하루 되세요!"],
+      default: ["지금 이 순간도 충분히 괜찮아요"]
+    };
+
+    function pickRandom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function pickRandomKeys(obj, count = 3) {
+      return Object.keys(obj).sort(() => 0.5 - Math.random()).slice(0, count);
+    }
+
+    function getPostPositionFix(word) {
+      const lastChar = word[word.length - 1];
+      const uni = lastChar.charCodeAt(0);
+      const hasFinal = (uni - 44032) % 28 !== 0;
+      return hasFinal ? "은" : "는";
+    }
+
+    function getMoodLine(type) {
+      const list = moodLines[type] || moodLines["default"];
+      return pickRandom(list);
+    }
+
+    function checkAllComplete() {
+      const all = document.querySelectorAll("input[type='checkbox']");
+      const completed = Array.from(all).filter(input => input.checked);
+      if (all.length > 0 && completed.length === all.length) {
+        alert("🎉 오늘의 루틴을 모두 완료했어요! 스스로를 칭찬해 주세요 💐");
+      }
+    }
+
+    function renderRoutineListByCategory(categoryData, weatherCode) {
+      const container = document.getElementById('routine');
+      container.innerHTML = "<h3>📝 오늘의 추천 루틴</h3><ul>";
+      const selectedCategories = pickRandomKeys(categoryData, 3);
+      selectedCategories.forEach((category, i) => {
+        const items = categoryData[category];
+        const value = pickRandom(items);
+        const id = `${weatherCode}-${category}-${i}`;
+        const checked = localStorage.getItem(id) === 'true';
+        container.innerHTML += `
+          <li>
+            <label>
+              <input type="checkbox" id="${id}" ${checked ? "checked" : ""}/>
+              <span class="${checked ? "completed" : ""}">[${category}] ${value}</span>
+            </label>
+          </li>`;
+      });
+      container.innerHTML += "</ul>";
+      document.querySelectorAll("input[type='checkbox']").forEach(input => {
+        input.addEventListener("change", () => {
+          localStorage.setItem(input.id, input.checked);
+          const span = input.nextElementSibling;
+          span.classList.toggle("completed", input.checked);
+          checkAllComplete();
+        });
+      });
+    }
+
+    async function getWeather(lat, lon) {
+      const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&lang=kr`);
+      return await res.json();
+    }
+
+    function loadWeatherAndRoutine() {
+      if (!apiKey) {
+        document.getElementById("weather").innerText = "API 키가 누락되었어요.";
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        try {
+          const data = await getWeather(latitude, longitude);
+          const weatherCode = data.weather[0].main.toLowerCase();
+          const emoji = weatherEmojis[weatherCode] || weatherEmojis["default"];
+          const moodLine = getMoodLine(weatherCode);
+          const tempC = (data.main.temp - 273.15).toFixed(1);
+          const description = data.weather[0].description;
+          const city = data.name || "현재 위치";
+          const particle = getPostPositionFix(city);
+
+          document.getElementById("weather").innerHTML =
+            `📍 ${city}${particle} ${description} ${emoji}<br/>
+             🌡 현재 온도: ${tempC}°C<br/>
+             💬 ${moodLine}`;
+
+          const routineSet = routinesByWeather[weatherCode] || routinesByWeather["default"];
+          renderRoutineListByCategory(routineSet, weatherCode);
+        } catch (err) {
+          console.error("🌩 날씨 API 오류:", err);
+          document.getElementById("weather").innerText = "날씨 정보를 불러오지 못했어요 😢";
+        }
+      }, (err) => {
+        console.warn("❌ 위치 접근 실패:", err);
+        document.getElementById("weather").innerText = "위치 정보 사용이 차단되어 있어요.";
+      });
+    }
+
+    function saveDiary() {
+      localStorage.setItem("diaryLine1", document.getElementById("line1").value);
+      localStorage.setItem("diaryLine2", document.getElementById("line2").value);
+      localStorage.setItem("diaryLine3", document.getElementById("line3").value);
+      alert("감사일기가 저장되었어요 😊");
+    }
+
+    window.onload = function () {
+      document.getElementById("line1").value = localStorage.getItem("diaryLine1") || "";
+      document.getElementById("line2").value = localStorage.getItem("diaryLine2") || "";
+      document.getElementById("line3").value = localStorage.getItem("diaryLine3") || "";
+      loadWeatherAndRoutine();
+    };
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>오늘, 괜찮았나요? 🌱</title>
 
   <!-- ✍️ 감성 손글씨 폰트 -->
   <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet" />
