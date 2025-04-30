@@ -3,26 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>내 마음에 NFC를 켜는 순간</title>
+  <title>오늘, 괜찮았나요? 🌱</title>
   <style>
     body {
-      margin: 0;
-      padding: 0 20px;
       font-family: 'Noto Sans KR', sans-serif;
       background-color: #fef3c7;
-      color: #333;
       background-image: url('https://i.ibb.co/WNMjKVXb/Kakao-Talk-Photo-2025-04-29-21-20-44.png');
       background-repeat: no-repeat;
-      background-position: bottom center;
       background-size: contain;
+      background-position: bottom center;
       min-height: 100vh;
-      padding-bottom: 220px;
+      margin: 0;
+      padding: 40px 20px 220px;
+      color: #333;
+      text-align: center;
     }
 
     .title {
-      text-align: center;
       font-size: 1.6rem;
-      margin-top: 30px;
       font-weight: bold;
       line-height: 1.4;
     }
@@ -31,45 +29,45 @@
     .highlight-blue { color: #60a5fa; }
 
     .subtitle {
-      text-align: center;
+      margin: 16px auto;
       background-color: #b3d675;
-      padding: 8px;
-      margin: 20px 0;
+      display: inline-block;
+      padding: 8px 16px;
       border-radius: 10px;
       font-weight: 500;
     }
 
     .weather {
-      display: inline-block;
       background: linear-gradient(to bottom, #3b82f6, #93c5fd);
       color: white;
       padding: 20px;
       border-radius: 12px;
-      width: 160px;
-      margin-bottom: 20px;
+      width: 180px;
+      margin: 20px auto;
     }
 
-    .box {
-      background-color: #fffcf2;
-      border-radius: 12px;
-      padding: 15px 20px;
+    .routine {
+      text-align: left;
+      max-width: 600px;
+      margin: 0 auto 20px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
       margin: 10px 0;
-      font-size: 0.95rem;
     }
 
-    .box strong {
-      display: block;
-      font-size: 1.05rem;
-      margin-bottom: 4px;
+    input[type="checkbox"] {
+      margin-right: 8px;
     }
 
-    .link {
-      text-align: right;
-      color: #b45309;
-      font-weight: bold;
-      font-size: 0.9rem;
-      margin-top: 5px;
-      text-decoration: underline;
+    .completed {
+      text-decoration: line-through;
+      opacity: 0.6;
     }
 
     .journal {
@@ -77,7 +75,8 @@
       color: white;
       border-radius: 12px;
       padding: 20px;
-      margin-top: 20px;
+      max-width: 600px;
+      margin: 0 auto;
     }
 
     .journal h2 {
@@ -113,38 +112,12 @@
   </style>
 </head>
 <body>
-
   <div class="title">
     내 <span class="highlight-pink">마음</span>에 <span class="highlight-blue">NFC</span>를 켜는 순간
   </div>
-
-  <div class="subtitle">
-    오늘은 하늘처럼 기분도 맑게!
-  </div>
-
-  <div class="weather">
-    <div style="font-size: 1.4rem;">☀ 16.1°C</div>
-    <div style="font-size: 0.9rem; margin-top: 4px;">인천광역시 / 맑음</div>
-  </div>
-
-  <div class="box">
-    <strong>🏋 Workout</strong>
-    공원 산책을 추천드려요. 좋은 공기를 마시며, 근처 공원을 산책해보는 건 어때요?
-    <div class="link">근처 공원 찾아보기</div>
-  </div>
-
-  <div class="box">
-    <strong>🎵 Music</strong>
-    빌리 아일리시의 “MY FUTURE”를 추천드려요.
-    <div class="link">노래 들으러 가기</div>
-  </div>
-
-  <div class="box">
-    <strong>🥑 Food</strong>
-    아보카도 오픈 샌드위치를 추천드려요.
-    <div class="link">맛집 찾으러 가기</div>
-  </div>
-
+  <div class="subtitle">오늘은 하늘처럼 기분도 맑게!</div>
+  <div id="weather" class="weather">날씨를 불러오는 중...</div>
+  <div id="routine" class="routine"></div>
   <div class="journal">
     <h2>📓 감사일기 적기</h2>
     <p>오늘 감사한 일을 적어보세요 :)</p>
@@ -155,12 +128,119 @@
   </div>
 
   <script>
-    // 페이지 로드 시 저장된 값 불러오기
-    window.onload = function () {
-      document.getElementById("line1").value = localStorage.getItem("diaryLine1") || "";
-      document.getElementById("line2").value = localStorage.getItem("diaryLine2") || "";
-      document.getElementById("line3").value = localStorage.getItem("diaryLine3") || "";
+    const apiKey = "ae2dd5af466f227db77a00f5aac8972d";
+    const routinesByWeather = {
+      clear: {
+        운동: ["러닝 20분 + 스트레칭", "공원 산책"],
+        음악: ["도망가자 - 선우정아", "My Future - Billie Eilish"],
+        음식: ["아보카도 오픈 샌드위치", "샐러드 + 닭가슴살"],
+        색상: ["오늘의 컬러 ‘라벤더’를 실천했어요 🎨"],
+        운세: ["‘기분 좋은 일이 생길 운세!’를 되새겼어요 💫"]
+      },
+      default: {
+        운동: ["가벼운 스트레칭", "명상 5분"],
+        음악: ["좋아하는 음악 듣기"],
+        음식: ["따뜻한 차 한잔"],
+        색상: ["오늘의 컬러 ‘민트’를 활용했어요 🎨"],
+        운세: ["‘당신은 지금도 충분히 괜찮아요’ 💫"]
+      }
     };
+
+    const weatherEmojis = {
+      clear: "☀", rain: "🌧", snow: "❄", clouds: "☁", mist: "🌫", default: "🌈"
+    };
+
+    const moodLines = {
+      clear: ["오늘은 하늘처럼 기분도 맑게 ☀", "가볍고 상쾌한 하루 되세요!"],
+      default: ["지금 이 순간도 충분히 괜찮아요"]
+    };
+
+    function pickRandom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function pickRandomKeys(obj, count = 3) {
+      return Object.keys(obj).sort(() => 0.5 - Math.random()).slice(0, count);
+    }
+
+    function getPostPositionFix(word) {
+      const lastChar = word[word.length - 1];
+      const uni = lastChar.charCodeAt(0);
+      const hasFinal = (uni - 44032) % 28 !== 0;
+      return hasFinal ? "은" : "는";
+    }
+
+    function getMoodLine(type) {
+      const list = moodLines[type] || moodLines["default"];
+      return pickRandom(list);
+    }
+
+    function checkAllComplete() {
+      const all = document.querySelectorAll("input[type='checkbox']");
+      const completed = Array.from(all).filter(input => input.checked);
+      if (all.length > 0 && completed.length === all.length) {
+        alert("🎉 오늘의 루틴을 모두 완료했어요! 스스로를 칭찬해 주세요 💐");
+      }
+    }
+
+    function renderRoutineListByCategory(categoryData, weatherCode) {
+      const container = document.getElementById('routine');
+      container.innerHTML = "<h3>📝 오늘의 추천 루틴</h3><ul>";
+      const selectedCategories = pickRandomKeys(categoryData, 3);
+      selectedCategories.forEach((category, i) => {
+        const items = categoryData[category];
+        const value = pickRandom(items);
+        const id = `${weatherCode}-${category}-${i}`;
+        const checked = localStorage.getItem(id) === 'true';
+        container.innerHTML += `
+          <li>
+            <label>
+              <input type="checkbox" id="${id}" ${checked ? "checked" : ""}/>
+              <span class="${checked ? "completed" : ""}">[${category}] ${value}</span>
+            </label>
+          </li>`;
+      });
+      container.innerHTML += "</ul>";
+      document.querySelectorAll("input[type='checkbox']").forEach(input => {
+        input.addEventListener("change", () => {
+          localStorage.setItem(input.id, input.checked);
+          const span = input.nextElementSibling;
+          span.classList.toggle("completed", input.checked);
+          checkAllComplete();
+        });
+      });
+    }
+
+    async function getWeather(lat, lon) {
+      const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&lang=kr`);
+      return await res.json();
+    }
+
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const { latitude, longitude } = pos.coords;
+      try {
+        const data = await getWeather(latitude, longitude);
+        const weatherCode = data.weather[0].main.toLowerCase();
+        const emoji = weatherEmojis[weatherCode] || weatherEmojis["default"];
+        const moodLine = getMoodLine(weatherCode);
+        const tempC = (data.main.temp - 273.15).toFixed(1);
+        const description = data.weather[0].description;
+        const city = data.name || "현재 위치";
+        const particle = getPostPositionFix(city);
+
+        document.getElementById("weather").innerHTML =
+          `📍 ${city}${particle} ${description} ${emoji}<br/>
+           🌡 현재 온도: ${tempC}°C<br/>
+           💬 ${moodLine}`;
+
+        const routineSet = routinesByWeather[weatherCode] || routinesByWeather["default"];
+        renderRoutineListByCategory(routineSet, weatherCode);
+      } catch {
+        document.getElementById("weather").innerText = "날씨 정보를 불러오지 못했어요 😢";
+      }
+    }, () => {
+      document.getElementById("weather").innerText = "위치 정보 사용이 차단되어 있어요.";
+    });
 
     function saveDiary() {
       localStorage.setItem("diaryLine1", document.getElementById("line1").value);
@@ -168,8 +248,14 @@
       localStorage.setItem("diaryLine3", document.getElementById("line3").value);
       alert("감사일기가 저장되었어요 😊");
     }
-  </script>
 
+    window.onload = function () {
+      document.getElementById("line1").value = localStorage.getItem("diaryLine1") || "";
+      document.getElementById("line2").value = localStorage.getItem("diaryLine2") || "";
+      document.getElementById("line3").value = localStorage.getItem("diaryLine3") || "";
+    };
+  </script>
 </body>
 </html>
+
 
