@@ -129,6 +129,7 @@
 
   <script>
     const apiKey = "ae2dd5af466f227db77a00f5aac8972d";
+
     const routinesByWeather = {
       clear: {
         운동: ["러닝 20분 + 스트레칭", "공원 산책"],
@@ -217,6 +218,11 @@
     }
 
     function loadWeatherAndRoutine() {
+      if (!apiKey) {
+        document.getElementById("weather").innerText = "API 키가 누락되었어요.";
+        return;
+      }
+
       navigator.geolocation.getCurrentPosition(async (pos) => {
         const { latitude, longitude } = pos.coords;
         try {
@@ -236,10 +242,12 @@
 
           const routineSet = routinesByWeather[weatherCode] || routinesByWeather["default"];
           renderRoutineListByCategory(routineSet, weatherCode);
-        } catch {
+        } catch (err) {
+          console.error("🌩 날씨 API 오류:", err);
           document.getElementById("weather").innerText = "날씨 정보를 불러오지 못했어요 😢";
         }
-      }, () => {
+      }, (err) => {
+        console.warn("❌ 위치 접근 실패:", err);
         document.getElementById("weather").innerText = "위치 정보 사용이 차단되어 있어요.";
       });
     }
