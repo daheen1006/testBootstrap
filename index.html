@@ -204,15 +204,15 @@
       selectedCategories.forEach((category, i) => {
         const items = categoryData[category];
         const value = pickRandom(items);
-        const id = ${weatherCode}-${category}-${i};
+        const id = `${weatherCode}-${category}-${i}`;
         const checked = localStorage.getItem(id) === 'true';
-        container.innerHTML += 
+        container.innerHTML += `
           <li>
             <label>
               <input type="checkbox" id="${id}" ${checked ? "checked" : ""}/>
               <span class="${checked ? "completed" : ""}">[${category}] ${value}</span>
             </label>
-          </li>;
+          </li>`;
       });
       container.innerHTML += "</ul>";
       document.querySelectorAll("input[type='checkbox']").forEach(input => {
@@ -226,7 +226,7 @@
     }
 
     async function getWeather(lat, lon) {
-      const res = await fetch(https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&lang=kr);
+      const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&lang=kr`);
       return await res.json();
     }
 
@@ -250,8 +250,8 @@
 
           // 날씨 표시
           document.getElementById("weather").innerHTML =
-            📍 ${city}${particle} ${description} ${emoji}<br/>
-             🌡 현재 온도: ${tempC}°C;
+            `📍 ${city}${particle} ${description} ${emoji}<br/>
+             🌡 현재 온도: ${tempC}°C`;
 
           // 감성 멘트 표시
           document.getElementById("subtitle").innerText = moodLine;
@@ -274,6 +274,17 @@
       localStorage.setItem("diaryLine3", document.getElementById("line3").value);
       alert("감사일기가 저장되었어요 😊");
     }
+
+    window.onload = function () {
+      document.getElementById("line1").value = localStorage.getItem("diaryLine1") || "";
+      document.getElementById("line2").value = localStorage.getItem("diaryLine2") || "";
+      document.getElementById("line3").value = localStorage.getItem("diaryLine3") || "";
+      loadWeatherAndRoutine();
+    };
+  </script>
+</body>
+</html>
+
 
     window.onload = function () {
       document.getElementById("line1").value = localStorage.getItem("diaryLine1") || "";
