@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>오늘, 괜찮았나요? 🌱</title>
 
-  <!-- ✅ 귀여운 동글동글 폰트 적용 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/webfontworld/cafe24Ssurround/stylesheet.css" />
+  <!-- ✍️ 감성 손글씨 폰트 -->
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet" />
 
   <style>
     body {
-      font-family: 'Cafe24Ssurround', sans-serif;
+      font-family: 'Nanum Pen Script', cursive;
       background-color: #fef3c7;
       background-image: url('https://i.ibb.co/WNMjKVXb/Kakao-Talk-Photo-2025-04-29-21-20-44.png');
       background-repeat: no-repeat;
@@ -120,9 +120,17 @@
   <div class="title">
     내 <span class="highlight-pink">마음</span>에 <span class="highlight-blue">NFC</span>를 켜는 순간
   </div>
-  <div id="subtitle" class="subtitle">오늘도 힘차게!</div>
+
+  <!-- 💬 랜덤 감성 멘트가 여기에 나옴 -->
+  <div id="subtitle" class="subtitle">기분 좋은 하루 되세요!</div>
+
+  <!-- 날씨 박스 -->
   <div id="weather" class="weather">날씨를 불러오는 중...</div>
+
+  <!-- 루틴 -->
   <div id="routine" class="routine"></div>
+
+  <!-- 감사일기 -->
   <div class="journal">
     <h2>📓 감사일기 적기</h2>
     <p>오늘 감사한 일을 적어보세요 :)</p>
@@ -157,11 +165,11 @@
     };
 
     const moodLines = {
-      clear: ["오늘은 하늘처럼 기분도 맑게 ☀", "맑은 날, 마음도 가볍게 💛"],
-      rain: ["비 오는 날엔 차분한 음악과 함께 🎵"],
-      snow: ["하얀 눈처럼 마음도 포근하게 ❄"],
-      clouds: ["흐림 속에도 빛은 있어요 ☁"],
-      default: ["지금 이 순간도 충분히 괜찮아요"]
+      clear: ["오늘은 하늘처럼 기분도 맑게 ☀", "맑은 날, 마음도 가볍게 💛", "햇살처럼 따뜻한 하루 보내요!"],
+      rain: ["비 오는 날엔 차분한 음악과 함께 🎵", "잔잔한 하루가 필요할 때예요 🌧"],
+      snow: ["하얀 눈처럼 마음도 포근하게 ❄", "오늘은 따뜻하게 입어요 ☕"],
+      clouds: ["흐림 속에도 빛은 있어요 ☁", "잠시 쉬어가는 하루도 좋아요"],
+      default: ["지금 이 순간도 충분히 괜찮아요", "천천히, 나답게 💚"]
     };
 
     function pickRandom(arr) {
@@ -226,6 +234,11 @@
     }
 
     function loadWeatherAndRoutine() {
+      if (!apiKey) {
+        document.getElementById("weather").innerText = "API 키가 누락되었어요.";
+        return;
+      }
+
       navigator.geolocation.getCurrentPosition(async (pos) => {
         const { latitude, longitude } = pos.coords;
         try {
@@ -238,18 +251,22 @@
           const city = data.name || "현재 위치";
           const particle = getPostPositionFix(city);
 
+          // 날씨 표시
           document.getElementById("weather").innerHTML =
             `📍 ${city}${particle} ${description} ${emoji}<br/>
              🌡 현재 온도: ${tempC}°C`;
 
+          // 감성 멘트 표시
           document.getElementById("subtitle").innerText = moodLine;
 
           const routineSet = routinesByWeather[weatherCode] || routinesByWeather["default"];
           renderRoutineListByCategory(routineSet, weatherCode);
-        } catch {
+        } catch (err) {
+          console.error("🌩 날씨 API 오류:", err);
           document.getElementById("weather").innerText = "날씨 정보를 불러오지 못했어요 😢";
         }
-      }, () => {
+      }, (err) => {
+        console.warn("❌ 위치 접근 실패:", err);
         document.getElementById("weather").innerText = "위치 정보 사용이 차단되어 있어요.";
       });
     }
