@@ -216,31 +216,33 @@
       return await res.json();
     }
 
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      const { latitude, longitude } = pos.coords;
-      try {
-        const data = await getWeather(latitude, longitude);
-        const weatherCode = data.weather[0].main.toLowerCase();
-        const emoji = weatherEmojis[weatherCode] || weatherEmojis["default"];
-        const moodLine = getMoodLine(weatherCode);
-        const tempC = (data.main.temp - 273.15).toFixed(1);
-        const description = data.weather[0].description;
-        const city = data.name || "현재 위치";
-        const particle = getPostPositionFix(city);
+    function loadWeatherAndRoutine() {
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        try {
+          const data = await getWeather(latitude, longitude);
+          const weatherCode = data.weather[0].main.toLowerCase();
+          const emoji = weatherEmojis[weatherCode] || weatherEmojis["default"];
+          const moodLine = getMoodLine(weatherCode);
+          const tempC = (data.main.temp - 273.15).toFixed(1);
+          const description = data.weather[0].description;
+          const city = data.name || "현재 위치";
+          const particle = getPostPositionFix(city);
 
-        document.getElementById("weather").innerHTML =
-          `📍 ${city}${particle} ${description} ${emoji}<br/>
-           🌡 현재 온도: ${tempC}°C<br/>
-           💬 ${moodLine}`;
+          document.getElementById("weather").innerHTML =
+            `📍 ${city}${particle} ${description} ${emoji}<br/>
+             🌡 현재 온도: ${tempC}°C<br/>
+             💬 ${moodLine}`;
 
-        const routineSet = routinesByWeather[weatherCode] || routinesByWeather["default"];
-        renderRoutineListByCategory(routineSet, weatherCode);
-      } catch {
-        document.getElementById("weather").innerText = "날씨 정보를 불러오지 못했어요 😢";
-      }
-    }, () => {
-      document.getElementById("weather").innerText = "위치 정보 사용이 차단되어 있어요.";
-    });
+          const routineSet = routinesByWeather[weatherCode] || routinesByWeather["default"];
+          renderRoutineListByCategory(routineSet, weatherCode);
+        } catch {
+          document.getElementById("weather").innerText = "날씨 정보를 불러오지 못했어요 😢";
+        }
+      }, () => {
+        document.getElementById("weather").innerText = "위치 정보 사용이 차단되어 있어요.";
+      });
+    }
 
     function saveDiary() {
       localStorage.setItem("diaryLine1", document.getElementById("line1").value);
@@ -253,9 +255,8 @@
       document.getElementById("line1").value = localStorage.getItem("diaryLine1") || "";
       document.getElementById("line2").value = localStorage.getItem("diaryLine2") || "";
       document.getElementById("line3").value = localStorage.getItem("diaryLine3") || "";
+      loadWeatherAndRoutine();
     };
   </script>
 </body>
 </html>
-
-
