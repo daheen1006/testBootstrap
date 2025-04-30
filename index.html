@@ -12,7 +12,7 @@
       background-image: url('https://i.ibb.co/WNMjKVXb/Kakao-Talk-Photo-2025-04-29-21-20-44.png');
       background-repeat: no-repeat;
       background-size: contain;
-      background-position: top center;
+      background-position: bottom center;
       min-height: 100vh;
       margin: 0;
       padding: 40px 20px 220px;
@@ -24,7 +24,6 @@
       font-size: 1.8rem;
       font-weight: bold;
       line-height: 1.4;
-      margin-top: 0;
     }
 
     .highlight-pink { color: #f472b6; }
@@ -119,10 +118,16 @@
     내 <span class="highlight-pink">마음</span>에 <span class="highlight-blue">NFC</span>를 켜는 순간
   </div>
 
+  <!-- 💬 랜덤 감성 멘트가 여기에 나옴 -->
   <div id="subtitle" class="subtitle">기분 좋은 하루 되세요!</div>
+
+  <!-- 날씨 박스 -->
   <div id="weather" class="weather">날씨를 불러오는 중...</div>
+
+  <!-- 루틴 -->
   <div id="routine" class="routine"></div>
 
+  <!-- 감사일기 -->
   <div class="journal">
     <h2>📓 감사일기 적기</h2>
     <p>오늘 감사한 일을 적어보세요 :)</p>
@@ -199,15 +204,15 @@
       selectedCategories.forEach((category, i) => {
         const items = categoryData[category];
         const value = pickRandom(items);
-        const id = `${weatherCode}-${category}-${i}`;
+        const id = ${weatherCode}-${category}-${i};
         const checked = localStorage.getItem(id) === 'true';
-        container.innerHTML += `
+        container.innerHTML += 
           <li>
             <label>
               <input type="checkbox" id="${id}" ${checked ? "checked" : ""}/>
               <span class="${checked ? "completed" : ""}">[${category}] ${value}</span>
             </label>
-          </li>`;
+          </li>;
       });
       container.innerHTML += "</ul>";
       document.querySelectorAll("input[type='checkbox']").forEach(input => {
@@ -221,11 +226,16 @@
     }
 
     async function getWeather(lat, lon) {
-      const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&lang=kr`);
+      const res = await fetch(https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&lang=kr);
       return await res.json();
     }
 
     function loadWeatherAndRoutine() {
+      if (!apiKey) {
+        document.getElementById("weather").innerText = "API 키가 누락되었어요.";
+        return;
+      }
+
       navigator.geolocation.getCurrentPosition(async (pos) => {
         const { latitude, longitude } = pos.coords;
         try {
@@ -238,18 +248,22 @@
           const city = data.name || "현재 위치";
           const particle = getPostPositionFix(city);
 
+          // 날씨 표시
           document.getElementById("weather").innerHTML =
-            `📍 ${city}${particle} ${description} ${emoji}<br/>
-             🌡 현재 온도: ${tempC}°C`;
+            📍 ${city}${particle} ${description} ${emoji}<br/>
+             🌡 현재 온도: ${tempC}°C;
 
+          // 감성 멘트 표시
           document.getElementById("subtitle").innerText = moodLine;
 
           const routineSet = routinesByWeather[weatherCode] || routinesByWeather["default"];
           renderRoutineListByCategory(routineSet, weatherCode);
-        } catch {
+        } catch (err) {
+          console.error("🌩 날씨 API 오류:", err);
           document.getElementById("weather").innerText = "날씨 정보를 불러오지 못했어요 😢";
         }
-      }, () => {
+      }, (err) => {
+        console.warn("❌ 위치 접근 실패:", err);
         document.getElementById("weather").innerText = "위치 정보 사용이 차단되어 있어요.";
       });
     }
@@ -269,5 +283,4 @@
     };
   </script>
 </body>
-</html>
-
+</html> 
